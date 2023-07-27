@@ -1,22 +1,51 @@
 #include "shell.h"
 
 /**
-  * cd - Afunction that changes working directory.
-  * @finder: The new current working directory.
-  * Return: 0 on success, -1 on failure.
-  */
+* sh_cd - changes the current directory
+* @info: Struct.
+* Return: Always 0
+*/
 
-int cd(const char *finder)
+int sh_cd(info_type *info)
 {
-	char *buff = NULL;
-	size_t buff_size = 1024;
+	char *s, *dir, buffer[1024];
+	int chdir_ret;
 
-	if (finder == NULL)
-		finder = getcwd(buff, buff_size);
-	if (chdir(finder) == -1)
+	s = getcwd(buffer, 1024);
+	if (!s)
+		_puts("Path not found\n");
+	if (!info->argv[1])
 	{
-		perror(finder);
-		return (98);
+		dir = _getenv(info, "HOME=");
+		if (!dir)
+			chdir_ret =
+				chdir((dir = _getenv(info, "PWD=")) ? dir : "/");
+		else
+			chdir_ret = chdir(dir);
 	}
-	return (1);
+	else if (_strcmp(info->argv[1], "-") == 0)
+	{
+		if (!_getenv(info, "OLDPWD="))
+		{
+			_puts(s);
+			_putchar('\n');
+			return (1);
+		}
+		_puts(_getenv(info, "OLDPWD=")), _putchar('\n');
+		chdir_ret =
+			chdir((dir = _getenv(info, "OLDPWD=")) ? dir : "/");
+	}
+	else
+		chdir_ret = chdir(info->argv[1]);
+	if (chdir_ret == -1)
+	{
+		print_error(info, "can't cd to ");
+		err_puts(info->argv[1]), err_putchar('\n');
+	}
+	else
+	{
+		_setenv(info, "OLDPWD", _getenv(info, "PWD="));
+		_setenv(info, "PWD", getcwd(buffer, 1024));
+	}
+	return (0);
 }

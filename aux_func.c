@@ -8,16 +8,17 @@
  */
 int _strcmp(char *str1, char *str2)
 {
-	unsigned int i;
+	int i, j = 0;
 
-	for (i = 0; str1[i]; i++)
+	for (i = 0; j == 0; i++)
 	{
-		if (str1[i] != str2[i])
-			return (0);
-		i++;
+		if (str1[i] == '\0' && str2[i] == '\0')
+		{
+			break;
+		}
+		j = str1[i] - str2[i];
 	}
-
-	return (1);
+	return (j);
 }
 
 /**
@@ -25,9 +26,9 @@ int _strcmp(char *str1, char *str2)
  * @str: The input string
  * Return: The length of the string
  */
-unsigned int _strlen(char *str)
+int _strlen(char *str)
 {
-	unsigned int length = 0;
+	int length = 0;
 
 	while (str[length])
 		length++;
@@ -44,10 +45,13 @@ unsigned int _strlen(char *str)
 char *_strcpy(char *dest, char *src)
 {
 	char *tmp = dest;
+	int i;
 
-	while (*src)
-		*dest++ = *src++;
-	*dest = '\0';
+	for (i = 0; src[i] != '\0'; i++)
+	{
+		dest[i] = src[i];
+	}
+	dest[i] = '\0';
 	return (tmp);
 }
 
@@ -59,15 +63,20 @@ char *_strcpy(char *dest, char *src)
  */
 char *_strcat(char *dest, char *src)
 {
-	char *tmp = dest;
+	int dlen = 0, slen = 0;
 
-	while (*dest)
-		dest++;
+	while (dest[dlen] != '\0')
+		dlen++;
 
-	*dest++ = '/';
-	while (*src)
-		*dest++ = *src++;
-	return (tmp);
+	while (slen >= 0)
+	{
+		dest[dlen] = src[slen];
+		if (src[slen] == '\0')
+			break;
+		dlen++;
+		slen++;
+	}
+	return (dest);
 }
 
 /**
